@@ -8,6 +8,7 @@ class ParkingRateFields {
   static final String baseRate = 'base_rate';
   static final String baseHours = 'base_hours';
   static final String extraHourlyRate = 'extra_hourly_rate';
+  static final String reserveRatePerHour = 'reserve_rate';
   static final String maxDailyRate = 'max_daily_rate';
   static final String createdAt = 'created_at';
 }
@@ -20,6 +21,7 @@ class ParkingRate {
   final double? baseRate;
   final int? baseHours;
   final double? extraHourlyRate;
+  final double? reserveRate;
   final double? maxDailyRate;
   final DateTime createdAt;
 
@@ -31,6 +33,7 @@ class ParkingRate {
     this.baseRate,
     this.baseHours,
     this.extraHourlyRate,
+    this.reserveRate,
     this.maxDailyRate,
     required this.createdAt,
   });
@@ -44,6 +47,7 @@ class ParkingRate {
       baseRate: map[ParkingRateFields.baseRate] != null ? (map[ParkingRateFields.baseRate] as num).toDouble() : null,
       baseHours: map[ParkingRateFields.baseHours] as int?, // Ensure it's nullable
       extraHourlyRate: map[ParkingRateFields.extraHourlyRate] != null ? (map[ParkingRateFields.extraHourlyRate] as num).toDouble() : null,
+      reserveRate: map[ParkingRateFields.reserveRatePerHour] != null ? (map[ParkingRateFields.reserveRatePerHour] as num).toDouble() : null,
       maxDailyRate: map[ParkingRateFields.maxDailyRate] != null ? (map[ParkingRateFields.maxDailyRate] as num).toDouble() : null,
       createdAt: map[ParkingRateFields.createdAt] != null
           ? DateTime.tryParse(map[ParkingRateFields.createdAt] as String) ?? DateTime.now()
@@ -62,6 +66,7 @@ class ParkingRate {
       ParkingRateFields.baseRate: baseRate,
       ParkingRateFields.baseHours: baseHours,
       ParkingRateFields.extraHourlyRate: extraHourlyRate,
+      ParkingRateFields.reserveRatePerHour: reserveRate,
       ParkingRateFields.maxDailyRate: maxDailyRate,
       ParkingRateFields.createdAt: createdAt.toIso8601String(),
     };

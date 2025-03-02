@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:uuid/uuid.dart';
+
 class ReservationFields {
   static const String id = 'reservation_id';
   static const String userId = 'user_id';
@@ -7,32 +9,29 @@ class ReservationFields {
   static const String slotId = 'slot_id';
   static const String vehicleId = 'vehicle_id';
   static const String status = 'status';
-  static const String reservedAt = 'reserved_at';
   static const String startTime = 'start_time';
   static const String endTime = 'end_time';
   static const String createdAt = 'created_at';
 }
 
 class Reservation {
-  final String id;
+  final String? id;
   final String userId;
   final String establishmentId;
   final String slotId;
   final String vehicleId;
   final String status;
-  final DateTime reservedAt;
   final DateTime startTime;
   final DateTime endTime;
   final DateTime createdAt;
 
   Reservation({
-    required this.id,
+    this.id,
     required this.userId,
     required this.establishmentId,
     required this.slotId,
     required this.vehicleId,
     required this.status,
-    required this.reservedAt,
     required this.startTime,
     required this.endTime,
     required this.createdAt,
@@ -46,7 +45,6 @@ class Reservation {
       slotId: map[ReservationFields.slotId] as String? ?? '',
       vehicleId: map[ReservationFields.vehicleId] as String? ?? '',
       status: map[ReservationFields.status] as String? ?? '',
-      reservedAt: DateTime.tryParse(map[ReservationFields.reservedAt] as String? ?? '') ?? DateTime.now(),
       startTime: DateTime.tryParse(map[ReservationFields.startTime] as String? ?? '') ?? DateTime.now(),
       endTime: DateTime.tryParse(map[ReservationFields.endTime] as String? ?? '') ?? DateTime.now(),
       createdAt: DateTime.tryParse(map[ReservationFields.createdAt] as String? ?? '') ?? DateTime.now(),
@@ -61,7 +59,6 @@ class Reservation {
       ReservationFields.slotId: slotId,
       ReservationFields.vehicleId: vehicleId,
       ReservationFields.status: status,
-      ReservationFields.reservedAt: reservedAt.toIso8601String(),
       ReservationFields.startTime: startTime.toIso8601String(),
       ReservationFields.endTime: endTime.toIso8601String(),
       ReservationFields.createdAt: createdAt.toIso8601String(),

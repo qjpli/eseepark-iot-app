@@ -62,17 +62,20 @@ class _SlotTimePickerState extends State<SlotTimePicker> {
     // Generate AM slots based on startHour and endHour
     for (int hour = widget.startHour; hour < 12 && hour < widget.endHour; hour++) {
       timeSlots['0']!.add(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, hour, 0));
-      timeSlots['0']!.add(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, hour, 30));
+      if (hour + 0.5 < widget.endHour) { // Ensure it doesn't exceed closing hour
+        timeSlots['0']!.add(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, hour, 30));
+      }
     }
 
     // Add PM slots from 12:00 PM to endHour
-    for (int hour = 12; hour <= widget.endHour; hour++) {
+    for (int hour = 12; hour < widget.endHour; hour++) { // Changed <= to < to avoid adding endHour
       timeSlots['1']!.add(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, hour, 0));
-      if (hour < widget.endHour) { // Only add 30-minute slot if not at end hour
+      if (hour + 0.5 < widget.endHour) { // Ensure it doesn't exceed closing hour
         timeSlots['1']!.add(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, hour, 30));
       }
     }
   }
+
 
 
   void initializeSetup() async {
@@ -133,7 +136,6 @@ class _SlotTimePickerState extends State<SlotTimePicker> {
 
     return DateFormat(format).format(finalTime);
   }
-
   int getAvailableSlots(DateTime selectedTime, List<Reservation> reservations) {
     int availableCount = 0;
 
@@ -143,8 +145,16 @@ class _SlotTimePickerState extends State<SlotTimePicker> {
       slotTime = selectedTime;
     });
 
-    // Get the relevant time slots based on selectedMeridiemIndex
-    List<DateTime> relevantSlots = timeSlots[selectedMeridiemIndex.toString()]!;
+    // Get relevant time slots based on selectedMeridiemIndex
+    List<DateTime> relevantSlots = [];
+
+    // If AM, consider both AM and PM slots
+    if (selectedMeridiemIndex == 0) {
+      relevantSlots.addAll(timeSlots['0']!); // AM slots
+      relevantSlots.addAll(timeSlots['1']!); // PM slots
+    } else {
+      relevantSlots = timeSlots['1']!; // Only PM slots
+    }
 
     for (DateTime slot in relevantSlots) {
       DateTime adjustedSlotTime = DateTime.utc(
@@ -154,8 +164,6 @@ class _SlotTimePickerState extends State<SlotTimePicker> {
         slot.hour,
         slot.minute,
       );
-
-      // print('Adjusted Slot: $adjustedSlotTime');
 
       // Skip if the slot time is before the selected time
       if (adjustedSlotTime.isBefore(selectedTime)) {
@@ -183,8 +191,8 @@ class _SlotTimePickerState extends State<SlotTimePicker> {
             adjustedSlotTime.isAtSameMomentAs(reservationStartTime) ||
             adjustedSlotTime.isAtSameMomentAs(reservationEndTime);
 
-        return overlaps;
-      });
+            return overlaps;
+        });
 
       if (isReserved) {
         print('Slot: $adjustedSlotTime is reserved. Stopping count.');

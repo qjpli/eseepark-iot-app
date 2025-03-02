@@ -2,6 +2,7 @@ import 'package:eseepark/customs/custom_textfields.dart';
 import 'package:eseepark/models/establishment_model.dart';
 import 'package:eseepark/models/parking_section_model.dart';
 import 'package:eseepark/screens/others/booking/partials/time_picker.dart';
+import 'package:eseepark/screens/others/booking/partials/vehicle_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,8 +12,25 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../customs/custom_widgets.dart';
 import '../../../globals.dart';
 import '../../../main.dart';
+import '../../../models/parking_rate_model.dart';
 import '../../../models/parking_slot_model.dart';
 import '../../../models/vehicle_model.dart';
+
+class ReservationSlot {
+  final int index;
+  final DateTime startTime;
+  final DateTime endTime;
+  final int duration;
+  final double price;
+
+  const ReservationSlot({
+    required this.index,
+    required this.startTime,
+    required this.endTime,
+    required this.duration,
+    required this.price
+  });
+}
 
 class Booking extends StatefulWidget {
   final String slotId;
@@ -32,8 +50,9 @@ class Booking extends StatefulWidget {
 
 class _BookingState extends State<Booking> {
   Map<String, dynamic> selectedTimeStatus = {};
+  ReservationSlot? selectedReservationSlot;
   final ScrollController scrollController = ScrollController();
-  final TextEditingController vehicleController = TextEditingController();
+  Vehicle? selectedVehicle;
   Stream<List<Map<String, dynamic>>>? parkingStream;
 
   @override
@@ -69,6 +88,12 @@ class _BookingState extends State<Booking> {
             .eq('establishment_id', sectionData['establishment_id'])
             .single();
 
+        final parkingRatesData = await supabase
+            .from('parking_rates')
+            .select()
+            .eq('establishment_id', sectionData['establishment_id'])
+            .single();
+
         final vehicleData = await supabase
             .from('vehicles')
             .select()
@@ -79,6 +104,7 @@ class _BookingState extends State<Booking> {
             'slot': ParkingSlot.fromMap(slot),
             'section': ParkingSection.fromMap(sectionData),
             'establishment': Establishment.fromMap(establishmentData),
+            'parking_rate': ParkingRate.fromMap(parkingRatesData),
             'vehicles': vehicleData.isNotEmpty ? vehicleData.map((e) => Vehicle.fromMap(e)).toList()  : []
           }
         ];
@@ -138,6 +164,7 @@ class _BookingState extends State<Booking> {
           final slot = data['slot'] as ParkingSlot;
           final section = data['section'] as ParkingSection;
           final establishment = data['establishment'] as Establishment;
+          final parkingRate = data['parking_rate'] as ParkingRate;
           final vehicles = data['vehicles'] as List<Vehicle>?;
 
           return Stack(
@@ -395,15 +422,20 @@ class _BookingState extends State<Booking> {
                                   showModalBottomSheet(
                                       context: context,
                                       builder: (context) {
-                                        return CustomPicker(
-                                            items: ((vehicles ?? []).isNotEmpty)
-                                                ? (vehicles ?? []).map((vehicle) => vehicle.name).toList()
-                                                : [],
+                                        return VehiclePicker(
+                                            items: vehicles ?? [],
+                                            titleKey: 'name',
                                             title: 'Select a Vehicle',
-                                            withData: vehicleController
+                                            selectedVehicle: selectedVehicle,
                                         );
                                       }
-                                  );
+                                  ).then((val) {
+                                    if(val is Vehicle) {
+                                      setState(() {
+                                        selectedVehicle = val;
+                                      });
+                                    }
+                                  });
                                 },
                                 child: Container(
                                   width: screenWidth,
@@ -418,7 +450,7 @@ class _BookingState extends State<Booking> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('Select a Vehicle',
+                                      Text(selectedVehicle == null ? 'Select a Vehicle' : selectedVehicle!.name.toString(),
                                         style: TextStyle(
                                             color: const Color(0xFF808080).withValues(alpha: 0.9),
                                             fontSize: screenSize * 0.012,
@@ -483,6 +515,7 @@ class _BookingState extends State<Booking> {
                                         ).then((val) {
                                           if(val is Map && val.isNotEmpty) {
                                             setState(() {
+                                              selectedReservationSlot = null;
                                               selectedTimeStatus = val as Map<String, dynamic>;
                                             });
 
@@ -559,9 +592,30 @@ class _BookingState extends State<Booking> {
                                               : "$remainingMinutes min";
 
                                           return InkWell(
-                                            onTap: () {},
+                                            onTap: () {
+                                              setState(() {
+                                                if(selectedReservationSlot?.index == index) {
+                                                  setState(() {
+                                                    selectedReservationSlot = null;
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    selectedReservationSlot = ReservationSlot(
+                                                        index: index,
+                                                        startTime: selectedTimeStatus['slotTime'],
+                                                        endTime: selectedTimeStatus['slotTime'].add(Duration(minutes: minutes)),
+                                                        duration: index + 1,
+                                                        price: (index + 1) * (parkingRate.reserveRate ?? 0)
+                                                    );
+                                                  });
+                                                }
+                                              });
+
+                                              print('Selected: ${selectedReservationSlot?.endTime}');
+                                            },
                                             borderRadius: BorderRadius.circular(10),
-                                            child: Container(
+                                            child: AnimatedContainer(
+                                              duration: const Duration(milliseconds: 100),
                                               height: screenWidth * 0.23,
                                               width: screenWidth * 0.23,
                                               margin: EdgeInsets.only(
@@ -569,7 +623,7 @@ class _BookingState extends State<Booking> {
                                                 right: index == (selectedTimeStatus['availableSlots'] ?? 0) - 1 ? screenWidth * 0.04 : screenWidth * 0.03,
                                               ),
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFFD1D1D1).withOpacity(0.2),
+                                                color: selectedReservationSlot?.index == index ? Theme.of(context).colorScheme.primary : const Color(0xFFD1D1D1).withOpacity(0.2),
                                                 borderRadius: BorderRadius.circular(10),
                                               ),
                                               child: Column(
@@ -580,13 +634,13 @@ class _BookingState extends State<Booking> {
                                                     text: TextSpan(
                                                       children: [
                                                         TextSpan(text: '₱', style: TextStyle(fontFamily: 'HelveticaNeue')),
-                                                        TextSpan(text: '${(index + 1) * 20}.00'),
+                                                        TextSpan(text: '${(index + 1) * (parkingRate.reserveRate ?? 0)}'),
                                                       ],
                                                       style: TextStyle(
                                                         fontWeight: FontWeight.w600,
                                                         fontSize: screenSize * 0.013,
                                                         height: 1,
-                                                        color: Theme.of(context).colorScheme.primary,
+                                                        color: selectedReservationSlot?.index == index ? Colors.white : Theme.of(context).colorScheme.primary,
                                                         fontFamily: 'Poppins'
                                                       ),
                                                     ),
@@ -597,7 +651,7 @@ class _BookingState extends State<Booking> {
                                                       fontWeight: FontWeight.w500,
                                                       fontSize: screenSize * 0.009,
                                                       height: 1,
-                                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                                      color: selectedReservationSlot?.index == index ? Colors.white : const Color(0xFF808080).withValues(alpha: 0.6),
                                                     ),
                                                   )
                                                 ],
@@ -618,6 +672,7 @@ class _BookingState extends State<Booking> {
                   )
                 ],
               ),
+              if(selectedReservationSlot != null)
               Positioned(
                 left: 0,
                 right: 0,
@@ -663,7 +718,7 @@ class _BookingState extends State<Booking> {
                               text: TextSpan(
                                 children: [
                                   TextSpan(text: '₱', style: TextStyle(fontFamily: 'HelveticaNeue', height: 0.3, fontWeight: FontWeight.w400)),
-                                  TextSpan(text: '20.00'),
+                                  TextSpan(text: selectedReservationSlot?.price.toString() ?? '0',),
                                 ],
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600,

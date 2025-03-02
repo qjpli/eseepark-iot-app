@@ -88,6 +88,34 @@ class _ShowInfoState extends State<ShowInfo> {
     }
   }
 
+  String getFormattedWeekday(int weekday) {
+    switch (weekday) {
+      case 1:
+        return 'Mon';
+      case 2:
+        return 'Tue';
+      case 3:
+        return 'Wed';
+      case 4:
+        return 'Thu';
+      case 5:
+        return 'Fri';
+      case 6:
+        return 'Sat';
+      case 7:
+        return 'Sun';
+      default:
+        return '';
+    }
+  }
+
+  String getFormattedTime(String time) {
+    // Split the time string by the colon
+    List<String> parts = time.split(':');
+    // Return the first part, which is the hour
+    return parts.isNotEmpty ? parts[0] : '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -896,27 +924,37 @@ class _ShowInfoState extends State<ShowInfo> {
                     SizedBox(height: screenHeight * 0.12),
                   ],
                 ),
-                Positioned(
+                if (establishment.operatingHours.any((operatingHour) =>
+                operatingHour.day == getFormattedWeekday(DateTime.now().weekday)))
+                  Positioned(
                   bottom: screenHeight * 0.04,
                   left: screenWidth * 0.05,
                   right: screenWidth * 0.05,
                   child: InkWell(
-                    onTap: () => showModalBottomSheet(
+                    onTap: establishment.operatingHours.any((operatingHour) =>
+                    int.parse(getFormattedTime(operatingHour.open)) <= DateTime.now().hour &&
+                        int.parse(getFormattedTime(operatingHour.close)) > DateTime.now().hour) ? () {
+                      showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
                         builder: (context) {
                           return ParkingSheet(establishmentId: establishment.establishmentId, distance: widget.distance);
-                    }),
+                      });
+                    } : null,
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       width: screenWidth * 0.8,
                       height: screenHeight * 0.06,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: Theme.of(context).colorScheme.primary
+                          color: establishment.operatingHours.any((operatingHour) =>
+            int.parse(getFormattedTime(operatingHour.open)) <= DateTime.now().hour &&
+            int.parse(getFormattedTime(operatingHour.close)) > DateTime.now().hour) ? Theme.of(context).colorScheme.primary  : Colors.grey.shade500.withValues(alpha: 0.6)
                       ),
                       alignment: Alignment.center,
-                      child: Text('Explore',
+                      child: Text(establishment.operatingHours.any((operatingHour) =>
+                          int.parse(getFormattedTime(operatingHour.open)) <= DateTime.now().hour &&
+                          int.parse(getFormattedTime(operatingHour.close)) > DateTime.now().hour) ? 'Explore' : 'Closed now',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: screenWidth * 0.04,
