@@ -604,12 +604,15 @@ class _BookingState extends State<Booking> {
                                                   setState(() {
                                                     selectedReservationSlot = ReservationSlot(
                                                         index: index,
-                                                        startTime: selectedTimeStatus['slotTime'],
-                                                        endTime: selectedTimeStatus['slotTime'].add(Duration(minutes: minutes)),
+                                                        startTime: (selectedTimeStatus['slotTime'] as DateTime).toUtc(),
+                                                        endTime: selectedTimeStatus['slotTime'].toUtc().add(Duration(minutes: minutes)),
                                                         duration: index + 1,
                                                         price: (index + 1) * (parkingRate.reserveRate ?? 0)
                                                     );
                                                   });
+
+                                                  print('Selected Start Time: ${selectedReservationSlot?.startTime}');
+                                                  print('Selected End Time: ${selectedReservationSlot?.endTime}');
                                                 }
                                               });
 
