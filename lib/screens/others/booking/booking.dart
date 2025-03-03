@@ -748,7 +748,7 @@ class _BookingState extends State<Booking> {
                               establishmentId: establishment.establishmentId,
                               slotId: widget.slotId,
                               vehicleId: selectedVehicle?.id,
-                              status: 'pending',
+                              status: 'not_started',
                               startTime: selectedReservationSlot?.startTime ?? DateTime.now().toUtc(),
                               endTime: selectedReservationSlot?.endTime ?? DateTime.now().toUtc(),
                               createdAt: DateTime.now().toUtc(),
