@@ -74,6 +74,7 @@ dependencies:
   permission_handler: ^11.4.0
   flutter_datetime_picker_plus: ^2.2.0
   wheel_slider: ^1.2.2
+  dotted_decoration: ^2.0.0
 
 flutter_native_splash:
   color: "#151515"

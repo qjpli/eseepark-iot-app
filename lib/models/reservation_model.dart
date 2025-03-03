@@ -19,7 +19,7 @@ class Reservation {
   final String userId;
   final String establishmentId;
   final String slotId;
-  final String vehicleId;
+  final String? vehicleId;
   final String status;
   final DateTime startTime;
   final DateTime endTime;
@@ -30,7 +30,7 @@ class Reservation {
     required this.userId,
     required this.establishmentId,
     required this.slotId,
-    required this.vehicleId,
+    this.vehicleId,
     required this.status,
     required this.startTime,
     required this.endTime,

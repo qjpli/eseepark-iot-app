@@ -1,8 +1,10 @@
 import 'package:eseepark/customs/custom_textfields.dart';
 import 'package:eseepark/models/establishment_model.dart';
 import 'package:eseepark/models/parking_section_model.dart';
+import 'package:eseepark/models/reservation_model.dart';
 import 'package:eseepark/screens/others/booking/partials/time_picker.dart';
 import 'package:eseepark/screens/others/booking/partials/vehicle_picker.dart';
+import 'package:eseepark/screens/others/booking/payment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -734,9 +736,29 @@ class _BookingState extends State<Booking> {
                       ),
                       SizedBox(height: screenHeight * 0.015),
                       ElevatedButton(
-                        onPressed: () {
-
-                        },
+                        onPressed: () => Get.to(() => Payment(
+                            reservation: Reservation(
+                              userId: supabase.auth.currentUser!.id,
+                              establishmentId: establishment.establishmentId,
+                              slotId: widget.slotId,
+                              vehicleId: selectedVehicle?.id,
+                              status: 'pending',
+                              startTime: selectedReservationSlot?.startTime ?? DateTime.now().toUtc(),
+                              endTime: selectedReservationSlot?.endTime ?? DateTime.now().toUtc(),
+                              createdAt: DateTime.now().toUtc(),
+                            ),
+                            selectedReservationSlot: selectedReservationSlot!,
+                            otherDetails: {
+                              'sectionAndSlotNo': {
+                                'name': section.name,
+                                'slotNo': slot.slotNumber
+                              },
+                              'vehicle': selectedVehicle
+                            },
+                          ),
+                          transition: Transition.leftToRight,
+                          duration: const Duration(milliseconds: 300),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(
