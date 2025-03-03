@@ -737,6 +737,9 @@ class _BookingState extends State<Booking> {
                       SizedBox(height: screenHeight * 0.015),
                       ElevatedButton(
                         onPressed: () => Get.to(() => Payment(
+                            establishment: establishment,
+                            parkingRate: parkingRate,
+                            vehicle: selectedVehicle,
                             reservation: Reservation(
                               userId: supabase.auth.currentUser!.id,
                               establishmentId: establishment.establishmentId,
@@ -746,6 +749,8 @@ class _BookingState extends State<Booking> {
                               startTime: selectedReservationSlot?.startTime ?? DateTime.now().toUtc(),
                               endTime: selectedReservationSlot?.endTime ?? DateTime.now().toUtc(),
                               createdAt: DateTime.now().toUtc(),
+                              updatedAt: DateTime.now().toUtc(),
+                              totalFee: selectedReservationSlot?.price ?? 0,
                             ),
                             selectedReservationSlot: selectedReservationSlot!,
                             otherDetails: {

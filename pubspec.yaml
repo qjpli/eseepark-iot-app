@@ -75,6 +75,8 @@ dependencies:
   flutter_datetime_picker_plus: ^2.2.0
   wheel_slider: ^1.2.2
   dotted_decoration: ^2.0.0
+  flutter_paypal_payment: ^1.0.8
+  torn_ticket: ^0.1.0
 
 flutter_native_splash:
   color: "#151515"
@@ -113,6 +115,7 @@ flutter:
     - assets/svgs/home/
     - assets/svgs/hub/
     - assets/svgs/search/
+    - assets/svgs/payment/
 
   fonts:
     - family: HelveticaNeue
