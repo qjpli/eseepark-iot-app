@@ -168,6 +168,7 @@ class _ShowInfoState extends State<ShowInfo> {
               }
             });
 
+
             if((establishment.parkingSections?.fold<int>(0, (sum, section) => sum + (section.parkingSlots?.where((slot) => slot.slotStatus == 'available').length ?? 0)) ?? 0) == 0) {
 
 
@@ -649,6 +650,7 @@ class _ShowInfoState extends State<ShowInfo> {
                         ],
                       )
                     ),
+                    if((establishment.feedbacks ?? []).isNotEmpty)
                     Container(
                       width: screenWidth,
                       decoration: BoxDecoration(
@@ -848,7 +850,7 @@ class _ShowInfoState extends State<ShowInfo> {
                                         Future.delayed(Duration(milliseconds: 500), () {
                                           print('Type: $type');
                                           setState(() {
-                                            type = 'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=Qipsk8ow5i3XD55aV9F0';
+                                            type = 'https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=1IJBvlwOaTPYsTwE09T3';
                                           });
                                         });
                                       }
