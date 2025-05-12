@@ -1,4 +1,4 @@
-# eSEEPark
+# eSEEPark IoT App
 
 ## **Description**  
 eSEEPark is an innovative parking solution designed to help drivers locate available parking spots in real time. It integrates IoT technology with cloud computing to provide a seamless parking experience for both users and parking administrators.  
