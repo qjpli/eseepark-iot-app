@@ -112,6 +112,7 @@ flutter:
     - assets/images/general/
     - assets/images/getstarted/
     - assets/images/home/establishments/
+    - assets/images/weather/
     - assets/svgs/home/
     - assets/svgs/hub/
     - assets/svgs/search/

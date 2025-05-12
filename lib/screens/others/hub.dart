@@ -2,9 +2,11 @@ import 'package:eseepark/globals.dart';
 import 'package:eseepark/screens/others/accounts/account.dart';
 import 'package:eseepark/screens/others/activity/activity.dart';
 import 'package:eseepark/screens/others/home/home.dart';
+import 'package:eseepark/screens/others/search/check_weather.dart';
 import 'package:eseepark/screens/others/search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class Hub extends StatefulWidget {
   const Hub({super.key});
@@ -102,16 +104,42 @@ class _HubState extends State<Hub> {
         child: Column(
           children: [
             Expanded(
-              child: PageView(
-                controller: pageController,
-                onPageChanged: onPageChanged,
+              child: Stack(
                 children: [
-                  const Home(),
-                  const Activity(),
-                  const Search(),
-                  const Account(),
+                  PageView(
+                    controller: pageController,
+                    onPageChanged: onPageChanged,
+                    children: [
+                      const Home(),
+                      const Activity(),
+                      const Search(),
+                      const Account(),
+                    ],
+                  ),
+                  Positioned(
+                    bottom: screenHeight * 0.03,
+                    right: screenWidth * 0.05,
+                    child: InkWell(
+                      onTap: () => Get.to(() => const CheckWeather(),
+                        transition: Transition.fadeIn,
+                        duration: const Duration(milliseconds: 300),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(13)
+                        ),
+                        padding: EdgeInsets.all(screenSize * 0.009),
+                        child: SvgPicture.asset(
+                          'assets/svgs/hub/weather.svg',
+                          width: screenSize * 0.025,
+                          colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        ),
+                      ),
+                    ),
+                  )
                 ],
-              ),
+              )
             ),
             Container(
               decoration: BoxDecoration(
