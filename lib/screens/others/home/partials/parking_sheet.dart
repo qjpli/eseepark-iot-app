@@ -696,86 +696,87 @@ class _ParkingSheetState extends State<ParkingSheet> {
                   ),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(
-                  top: screenHeight * 0.03,
-                  bottom: screenHeight * 0.03,
-                  left: screenWidth * 0.05,
-                  right: screenWidth * 0.05
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: selectedSlot.isNotEmpty ? () {
-                          final checkSlotAvailability = establishment.parkingSections?.firstWhere(
-                              (section) => section.parkingSlots?.any((slot) => slot.id == selectedSlot) ?? false
-                          );
-
-                          print('clicked');
-
-                          if (checkSlotAvailability?.parkingSlots?.firstWhere((slot) => slot.id == selectedSlot).slotStatus != 'available') {
-
-                            Get.snackbar(
-                              'Oops!',
-                              'Sorry, this slot is not available at the moment.',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                              borderRadius: 10,
-                              margin: EdgeInsets.all(10),
-                              duration: const Duration(seconds: 3),
+              if(false)
+                Container(
+                  padding: EdgeInsets.only(
+                    top: screenHeight * 0.03,
+                    bottom: screenHeight * 0.03,
+                    left: screenWidth * 0.05,
+                    right: screenWidth * 0.05
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: selectedSlot.isNotEmpty ? () {
+                            final checkSlotAvailability = establishment.parkingSections?.firstWhere(
+                                (section) => section.parkingSlots?.any((slot) => slot.id == selectedSlot) ?? false
                             );
 
-                            setState(() {
-                              selectedSlot = '';
-                            });
+                            print('clicked');
 
-                            return;
-                          } else {
-                            print('happening');
-                            Get.back();
-                            Get.to(() => Booking(slotId: selectedSlot, distance: widget.distance, availableSlots: (establishment.parkingSections
-                                ?.fold<int>(0, (sum, section) => sum + (section.parkingSlots?.where((slot) => slot.slotStatus == 'available').length ?? 0)) ?? 0)),
-                              transition: Transition.rightToLeft,
-                              duration: const Duration(milliseconds: 300),
-                            );
-                          }
-                        } : null,
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.04,
-                            vertical: screenHeight * 0.017
-                          )
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(selectedSlot.isEmpty
-                                ? 'Choose a Slot'
-                                : 'Pick Slot ${establishment.parkingSections?.firstWhere(
-                                    (sec) => sec.parkingSlots?.any((slot) => slot.id == selectedSlot) ?? false
-                            ).name} - ${establishment.parkingSections?.firstWhere(
-                                    (sec) => sec.parkingSlots?.any((slot) => slot.id == selectedSlot) ?? false
-                            ).parkingSlots?.firstWhere((slot) => slot.id == selectedSlot).slotNumber}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: screenSize * 0.014,
-                                fontWeight: FontWeight.w600
-                              ),
+                            if (checkSlotAvailability?.parkingSlots?.firstWhere((slot) => slot.id == selectedSlot).slotStatus != 'available') {
+
+                              Get.snackbar(
+                                'Oops!',
+                                'Sorry, this slot is not available at the moment.',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white,
+                                borderRadius: 10,
+                                margin: EdgeInsets.all(10),
+                                duration: const Duration(seconds: 3),
+                              );
+
+                              setState(() {
+                                selectedSlot = '';
+                              });
+
+                              return;
+                            } else {
+                              print('happening');
+                              Get.back();
+                              Get.to(() => Booking(slotId: selectedSlot, distance: widget.distance, availableSlots: (establishment.parkingSections
+                                  ?.fold<int>(0, (sum, section) => sum + (section.parkingSlots?.where((slot) => slot.slotStatus == 'available').length ?? 0)) ?? 0)),
+                                transition: Transition.rightToLeft,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            }
+                          } : null,
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.04,
+                              vertical: screenHeight * 0.017
                             )
-                          ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(selectedSlot.isEmpty
+                                  ? 'Choose a Slot'
+                                  : 'Pick Slot ${establishment.parkingSections?.firstWhere(
+                                      (sec) => sec.parkingSlots?.any((slot) => slot.id == selectedSlot) ?? false
+                              ).name} - ${establishment.parkingSections?.firstWhere(
+                                      (sec) => sec.parkingSlots?.any((slot) => slot.id == selectedSlot) ?? false
+                              ).parkingSlots?.firstWhere((slot) => slot.id == selectedSlot).slotNumber}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: screenSize * 0.014,
+                                  fontWeight: FontWeight.w600
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  )
                 )
-              )
             ],
           ),
         );
