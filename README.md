@@ -24,7 +24,7 @@ eSEEPark is an innovative parking solution designed to help drivers locate avail
 ## Installation Instructions
 1. Clone the repository:
    ```sh
-   git clone https://github.com/eseepark06/eseepark-iot-app.git
+   git clone https://github.com/qjpli/eseepark-iot-app.git
    cd eseepark-iot-app
    ```
 2. Install dependencies:
